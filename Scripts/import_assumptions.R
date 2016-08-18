@@ -11,6 +11,4 @@ assump2 <- read.csv(file2, sep="\t")
 foo <- list(assump1, assump2)
 
 return(foo) 
-
-
 }
