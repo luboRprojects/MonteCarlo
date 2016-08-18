@@ -39,11 +39,41 @@ rownames(quant_growth ) <- rownames(price_growth) <- NULL
 # Change in proportion of material costs on total cost
 perc_cost_mat <- as.numeric(mc_df_2[i,c("mat_costFY15","mat_costFY16","mat_costFY17","mat_costFY18","mat_costFY19")])
 
-as.numeric(mc_df_2[i,c("proc_costFY15","proc_costFY16","proc_costFY17","proc_costFY18","proc_costFY19")])
+as.numeric(mc_df_1[i,c("proc_costFY15","proc_costFY16","proc_costFY17","proc_costFY18","proc_costFY19")])
 # Change in labor costs
 sal.incr <- as.numeric(mc_df_2[i,c("lab_costFY15","lab_costFY16","lab_costFY17","lab_costFY18","lab_costFY19")])
 
 # Change in general processing costs
-gr.tab_gen_proc <- 1+matrix(c(
+gr.tab_gen_proc <- 1 + as.matrix(rbind(g1_p, g2_p,
+ as.numeric(mc_df_1[i,c("proc_costFY15M1","proc_costFY16M1","proc_costFY17M1","proc_costFY18M1","proc_costFY19M1")]),
+ as.numeric(mc_df_1[i,c("proc_costFY15M2","proc_costFY16M2","proc_costFY17M2","proc_costFY18M2","proc_costFY19M2")]),
+ as.numeric(mc_df_1[i,c("proc_costFY15M3","proc_costFY16M3","proc_costFY17M3","proc_costFY18M3","proc_costFY19M3")]) )
+)
 
+# Selling percent - multiplied by revenues
+# to get selling expenditures.
+selling_perc <- rep((0.18788-0.01)/100, 5)
+
+selling_perc <- mc_df_2[i,c("sell_expFY15", "sell_expFY16", "sell_expFY17", "sell_expFY18", "sell_expFY19")]
+
+# Administrative costs - multiplied by revenues
+admin_perc <- rep((6.17119+0.1)/100, 5)
+admin_perc <- mc_df_2[i,c("admin_expFY15", "admin_expFY16", "admin_expFY17", "admin_expFY18", "admin_expFY19")]
+
+# Interest on loans
+int_loans <- rep(0.08, 5)
+
+# Allocation to Investment and development fund
+inv_dev_perc <- rep(0.1, 5)
+
+# Allocation to Financial provision fund
+fin_prov_perc <- rep(0.05, 5)
+
+# Estimated dividend per share 
+div_per_share <- c(1000, 1200, 1500, 1500, 2000)
+
+
+
+colnames(mc_df_1)
+colnames(mc_df_2)
 # } # Close loop
