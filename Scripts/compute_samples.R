@@ -45,7 +45,7 @@ mc_values.2 <- lapply(a2.2, function(x){
 mc_df_1 <- do.call(cbind.data.frame, mc_values.1)
 mc_df_2 <- do.call(cbind.data.frame, mc_values.2)
 
-return(list(mc_df_1, mc_df_2)) 
+return(list(mc_df_1, mc_df_2, n.boot)) 
 }
 
 
