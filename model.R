@@ -10,7 +10,7 @@ mc_df_2 <- mc.samples[[2]]
 n.samples <- mc.samples[[3]]
 
 #-------- Start looping -------
-
+i=1
 # for(i in 1:n.samples){ # commented for DEV only
 
 # Revenues - quantity growth
@@ -33,14 +33,17 @@ price_growth <- as.matrix(rbind(g1_p, g2_p,
  as.numeric(mc_df_1[i,c("p_growthFY15M3","p_growthFY16M3","p_growthFY17M3","p_growthFY18M3","p_growthFY19M3")])) )
 
 rownames(quant_growth ) <- rownames(price_growth) <- NULL
-# price_growth
 # quant_growth
+# price_growth
 
 # Change in proportion of material costs on total cost
-perc_cost_mat <- c(-0.10, 0.05, 0.05, 0.05, 0.1) # proportion in years 2015-2019
-as.numeric(mc_df_2[i,c("mat_costFY15","mat_costFY16","mat_costFY17","mat_costFY18","mat_costFY19")])
+perc_cost_mat <- as.numeric(mc_df_2[i,c("mat_costFY15","mat_costFY16","mat_costFY17","mat_costFY18","mat_costFY19")])
+
 as.numeric(mc_df_2[i,c("proc_costFY15","proc_costFY16","proc_costFY17","proc_costFY18","proc_costFY19")])
 # Change in labor costs
-sal.incr <- c(0.05, 0.05, 0.05, 0.05, 0.1) # proportion in years 2015-2019
+sal.incr <- as.numeric(mc_df_2[i,c("lab_costFY15","lab_costFY16","lab_costFY17","lab_costFY18","lab_costFY19")])
+
+# Change in general processing costs
+gr.tab_gen_proc <- 1+matrix(c(
 
 # } # Close loop
