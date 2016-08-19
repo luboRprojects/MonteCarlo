@@ -70,7 +70,25 @@ fin_prov_perc <- mc_df_2[i,c("fin_provFY15", "fin_provFY16", "fin_provFY17", "fi
 # Estimated dividend per share 
 div_per_share <- mc_df_2[i,c("div_per_shareFY15", "div_per_shareFY16", "div_per_shareFY17", "div_per_shareFY18", "div_per_shareFY19")]
 
+#----------- Revenues ------------- 
+quantity_0 <- c(95400, 269490,  195898,  322077,  704218)
+sell_price_0 <- c(91500, 83000,  134578,  114929,  108794)
+rev_init <- c(8206, 3648, 27286, 37757, 129710)
 
+quantity0 <- data.frame(init = quantity_0, 1 + quant_growth)
+quantity <- apply(quantity0, 1, function(x){cumprod(as.numeric(x))})
+
+prices0 <- data.frame(init = sell_price_0, 1 + price_growth)
+prices <- apply(prices0, 1, function(x){cumprod(as.numeric(x))})
+prices[ ,5] <- c(108794, 113000, 120000, 127000, 134000, 140700) 
+
+rev_tab0 <- revenues <- quantity * prices / 1000000
+rev_tab0 <- rev_tab0[-1, ]
+rev_tab0[1, 1:2] <- c(8206, 3648)
+
+revenues <- rowSums(data.frame(rev_tab0), na.rm=TRUE)
+# Keep 0.208 and 9679 - rely on 2014 data
+sales_growth <- c(0.20758, diff(revenues)/revenues[1:length(diff(revenues))])
 
 colnames(mc_df_1)
 colnames(mc_df_2)
