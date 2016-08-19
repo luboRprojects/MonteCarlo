@@ -140,9 +140,204 @@ grant_money <- c(0.69, 0.7, 0.68, 0.66 ,0.65)
 
 min_right_const <- royal * K_fact * grant_money
 
-cost_min_right <- capacity * cap_constant * min_right_const / 1E6
-cost_min_right[which(is.na(cost_min_right))] <- 0
-cost_min_right <- rep(sum(cost_min_right), 5)
+# TODO-------------------
+# cost_min_right <- capacity * cap_constant * min_right_const / 1E6
+# cost_min_right[which(is.na(cost_min_right))] <- 0
+# cost_min_right <- rep(sum(cost_min_right), 5)
+cost_min_right <- rep(6683, 5)
+
+#========
+cogs <- cost_raw_mat + cost_lab + deprec0 + cost_gen_proc + cost_min_right
+#======== Net Income after taxes =========
+# net_in_at
+
+prof_gr <- revenues - cogs
+
+#------
+sell_exp <- (-revenues) * selling_perc 
+#------
+gen_admin_exp <- (-revenues) * admin_perc
+#------
+EBITDA <- prof_gr + sell_exp + gen_admin_exp
+ deprec <-  c(9694, 10694, 10694, 10694, 10694)  # should use this one - TODO: DECOMPOSE!
+EBIT <- EBITDA - deprec
+
+
+######################################################
+######################################################
+##################### OWN EQUITY #####################
+ paid_up_cap <- rep(151199, 5)
+owners_equity <- paid_up_cap
+#------
+ shar_prem <- rep(58398, 5)
+share_premium <- shar_prem
+#------
+ tres_share <- rep(-1298, 5)
+treasury_shares <- tres_share
+
+#============ Liabilities =============
+  st_borrowings <- cumprod(c(17520, 1+sales_growth))[-1]
+#---
+   days_payable <- rep(18, rep=5)
+  trade_acc_pay <- days_payable * cogs/365
+#---
+  cust_advanc <- cumprod(c(1140, 1+sales_growth))[-1]
+#---
+  taxes_payable <- cumprod(c(1916, 1+sales_growth))[-1]
+#---
+  empl_payable <- cumprod(c(3533, 1+sales_growth))[-1]
+#---
+  acc_exp <- cumprod(c(6449, 1+sales_growth))[-1] 
+#---
+  other_payb <- cumprod(c(1134, 1+sales_growth))[-1] 
+#---
+ current_liab <- st_borrowings + trade_acc_pay + cust_advanc + 
+  taxes_payable + empl_payable + acc_exp + other_payb
+
+#=====
+liabilities <- current_liab
+
+#==============
+
+short_term_inv <- rep(23814, 5)
+#------
+ days.receiv <- rep(70, 5)
+ receiv.constant <- rep(13000,5) #!
+account_receivables <- revenues * days.receiv/365 + receiv.constant
+#------
+ days.invent <- rep(41, 5)
+inventories <- cogs * days.invent / 365
+#------
+other_curr_assets <- 9679 * cumprod(1+sales_growth)
+#-----------------
+sht_0 <- short_term_inv + account_receivables + 
+ inventories + other_curr_assets
+#=========================================================
+# Need to compute cash and cash equivalents computed as:
+# Cash = Total Assets - sht_0 - long_term_assets
+#----------------------------
+# tf_costs are "computed" in non-standard way; set constants
+   tf_cost <- cumsum(c(83962, 4267, 27828, 29193, 34193, 32828))[-1]
+   tang_accum.dep <- cumsum(c(45348, deprec))[-1]
+  tang_fixed <- tf_cost - tang_accum.dep
+#---------
+  intang_fixed <- c(101833, 101433, 101033, 100633, 100233) 
+#---------
+  constr_in_prog <- c(37896, 65724, 94918, 129111, 161940) 
+#=====
+ fixed_assets <- tang_fixed + intang_fixed + constr_in_prog
+#
+  unlisted_stocks <- rep(45146, 5)
+#---------
+  int_joint_ventures <- rep(8459, 5)
+#---------
+ long_investment <- unlisted_stocks + int_joint_ventures
+#---------
+# Non-systematic -> autofill
+
+load_land_cove <- data.frame(matrix(c(
+ NA, NA, 464, 3131, 1430,
+ NA, NA, 1363, 7200, 2560,
+ NA, NA, 1449, 7652, 2816,
+ NA, NA, 1630, 8609, 2816,
+ NA, NA, 1778, 9392, 2688),nrow=5, ncol=5) )
+
+ other_long_inv <- colSums(load_land_cove, na.rm=TRUE)
+long_term_assets <- fixed_assets + long_investment + other_long_inv
+
+
+####################### NEED OF NET PROFIT #####################
+#################################################################
+# Financial Income was imputed from Excel to avoid circular
+
+#============================
+#dep_rate <- rep(0.05, 5)
+# int_dep_bank <- (cash + short_term_inv) * dep_rate 
+
+# Non-standard way:
+# other_fin_income <- c(7762.415,  11067, 13601, 16274, 18890) 
+
+fin_income <-  c(11003, 12819, 14201, 15948, 18126) 
+
+#-------
+interest_expenses <- st_borrowings * int_loans
+fin_exp_others <- rep(0, 5)
+fin_expenses <- interest_expenses + fin_exp_others
+#-------
+
+prof_bt <- prof_gr + sell_exp + gen_admin_exp + fin_income - fin_expenses
+
+inc_tax_rate <- rep(0.2, 5)
+in_tax <- prof_bt * inc_tax_rate 
+net_profit_after_tax <- as.numeric(prof_bt - in_tax)
+
+#============ Equity =============
+inv_dev_fund <- cumsum(c(73695 , net_profit_after_tax * inv_dev_perc))[-1]
+#------
+fin_provisions <- cumsum(c(15100, net_profit_after_tax * fin_prov_perc))[-1]
+#------
+
+welfare_fund_perc <- rep(0, 5)
+shares <- rep(15119946, 5)
+div_policy <- shares*div_per_share / 1000000	
+
+ ret_earnings <- cumsum(c(8437,
+   net_profit_after_tax * (1-(inv_dev_perc + fin_prov_perc + welfare_fund_perc))- 
+   div_policy ))[-1] 
+
+#-------------- 
+ capital_reserves <- owners_equity + share_premium + treasury_shares + 
+  inv_dev_fund + fin_provisions + ret_earnings
+
+#=====
+ owners_equity <- capital_reserves
+
+total_assets <- as.numeric(owners_equity + liabilities)
+
+#-----------------
+#total_assets <- sht_0 + cash + long_term_assets
+cash <- total_assets - sht_0 - long_term_assets
+
+#==================================================
+#--------------------  FCFF  ----------------------
+
+net_in_at <- net_profit_after_tax # Net Income after taxes
+
+#=====================================================
+ delta_receiv <- diff(c(47635, account_receivables)) * (-1)
+ delta_invent <- diff(c(3887, inventories)) * (-1)
+ delta_payable <- diff(c(17758, trade_acc_pay + cust_advanc + 
+  taxes_payable + empl_payable + acc_exp + other_payb) )
+ delta_other_assets <- diff(c(9679, other_curr_assets) ) * (-1)
+
+net_working_cap <-  delta_receiv + delta_invent + 
+  delta_payable +  delta_other_assets
+
+#=====================================================
+CFO <- net_in_at + deprec + net_working_cap 
+int_exp_at <- (-1) * interest_expenses * (1-inc_tax_rate)
+
+# Different computation
+net_invest_fix_cap <- c(4267, 27828, 29193, 34193, 32828) 
+
+FCFF <- CFO +  int_exp_at - net_invest_fix_cap
+
+wacc_short <- data.frame(
+ matrix(rep(rep(0.1686, 5),n_iter),
+ ncol=5, byrow=TRUE )
+)
+
+disc_fact <- data.frame(t(apply((1+wacc_short), 1, cumprod)))
+
+
+
+
+
+
+
+
+
+
 
 
 colnames(mc_df_1)
