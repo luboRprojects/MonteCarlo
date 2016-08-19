@@ -9,9 +9,11 @@ mc_df_1 <- mc.samples[[1]]
 mc_df_2 <- mc.samples[[2]]
 n.samples <- mc.samples[[3]]
 
+FCFF_foo <- c()
+
 #-------- Start looping -------
-i=1
-# for(i in 1:n.samples){ # commented for DEV only
+#i=n.samples=1
+ for(i in 1:n.samples){ # commented for DEV only
 
 # Revenues - quantity growth
 
@@ -322,24 +324,28 @@ net_invest_fix_cap <- c(4267, 27828, 29193, 34193, 32828)
 
 FCFF <- CFO +  int_exp_at - net_invest_fix_cap
 
-wacc_short <- data.frame(
- matrix(rep(rep(0.1686, 5),n_iter),
- ncol=5, byrow=TRUE )
-)
+wacc_short <- mc_df_2[i,c("wacc_shortFY15", "wacc_shortFY16", "wacc_shortFY17", "wacc_shortFY18", "wacc_shortFY19")]
+disc_fact <- as.numeric(t(apply((1+wacc_short), 1, cumprod)))
 
-disc_fact <- data.frame(t(apply((1+wacc_short), 1, cumprod)))
+#-----
+growth_long <- mc_df_2[i,"growth_longFY20"]
+wacc_long <- mc_df_2[i,"wacc_longFY20"]
+#-----
+
+pv.cf <- data.frame(
+ pv.cf = apply(FCFF / disc_fact, 1, sum),
+ terminal = last(FCFF) * (1+growth_long) /
+  (wacc_long - growth_long ) /
+  disc_fact[length(disc_fact)]) %>%
+ mutate(FCFF = pv.cf + terminal)
+
+FCFF_foo[i] <- pv.cf$FCFF
+}
 
 
+hist(FCFF_foo)
 
 
+#colnames(mc_df_1)
+#colnames(mc_df_2)
 
-
-
-
-
-
-
-
-colnames(mc_df_1)
-colnames(mc_df_2)
-# } # Close loop
