@@ -90,6 +90,61 @@ revenues <- rowSums(data.frame(rev_tab0), na.rm=TRUE)
 # Keep 0.208 and 9679 - rely on 2014 data
 sales_growth <- c(0.20758, diff(revenues)/revenues[1:length(diff(revenues))])
 
+#-------------- COGS --------------
+#--- Raw Material ------
+
+cost_raw_mat0 <- c(NA, NA, 1734, 2850, 6232) #initial costs
+ cost_raw_mat1 <- matrix(cost_raw_mat0, ncol=1)
+ cost_raw_mat1[1:2, ] <- 0
+
+temp.growth <- matrix(rep((1+perc_cost_mat),5), ncol=5, byrow=TRUE)
+temp.growth[5, ] <- 1
+
+matcost_15 <- cost_raw_mat1 * (1+c(rep((perc_cost_mat)[1],4),0)) * (1+quant_growth[,1])
+matcost_16 <- matcost_15 * (1+c(rep((perc_cost_mat)[2],4),0)) * (1+quant_growth[,2])
+matcost_17 <- matcost_16 * (1+c(rep((perc_cost_mat)[2],4),0)) * (1+quant_growth[,3])
+matcost_18 <- matcost_17 * (1+c(rep((perc_cost_mat)[2],4),0)) * (1+quant_growth[,4])
+matcost_19 <- matcost_18 * (1+c(rep((perc_cost_mat)[2],4),0)) * (1+quant_growth[,5])
+
+cost_mat0 <- data.frame(matcost_15, matcost_16, matcost_17, matcost_18, matcost_19)
+cost_raw_mat <- as.numeric(colSums(cost_mat0, na.rm=TRUE))
+
+#--- Labour cost ------
+cost_lab0 <- c(NA, NA,  1733, 2849, 6229) #initial costs
+
+t1 <- (1+matrix(rep(sal.incr, 5), byrow=TRUE, nrow=5)) * (1+quant_growth)
+dd <- data.frame(init=cost_lab0, t1)
+cost_lab0 <- apply(dd, 1, function(x){cumprod(as.numeric(x))})[-1, ]
+
+cost_lab <- rowSums(cost_lab0, na.rm=TRUE)
+deprec0 <-  c(9048, 9048,9048, 9048, 9048) #12*some constant...
+
+#--- General processing costs ------
+cost_gen_proc0 <- c(NA, NA, 12320, 20255, 44287) #initial costs
+
+temp.gpd <- gr.tab_gen_proc * (1 + quant_growth)
+ rownames(temp.gpd) <- NULL
+
+gen_proc_growth <- data.frame(init = cost_gen_proc0, temp.gpd )
+quantity_gen_proc <- apply(gen_proc_growth, 1, function(x){cumprod(as.numeric(x))})[-1, ]
+
+cost_gen_proc <- rowSums(quantity_gen_proc, na.rm=TRUE)
+
+capacity <- c(NA, NA, 280000, 490000, 650000)
+cap_constant <- c(NA, NA, 11, 10, 6)
+royal <- 12500
+
+#--------- Constants -----
+K_fact <- 0.9
+grant_money <- c(0.69, 0.7, 0.68, 0.66 ,0.65)
+
+min_right_const <- royal * K_fact * grant_money
+
+cost_min_right <- capacity * cap_constant * min_right_const / 1E6
+cost_min_right[which(is.na(cost_min_right))] <- 0
+cost_min_right <- rep(sum(cost_min_right), 5)
+
+
 colnames(mc_df_1)
 colnames(mc_df_2)
 # } # Close loop
