@@ -152,7 +152,7 @@ EBIT <- EBITDA - deprec
  paid_up_cap <- rep(151199, 5)
 owners_equity <- paid_up_cap
 #------
- shar_prem <- rep( 58398, 5)
+ shar_prem <- rep(58398, 5)
 share_premium <- shar_prem
 #------
  tres_share <- rep(-1298, 5)
