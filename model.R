@@ -342,6 +342,12 @@ pv.cf <- data.frame(
 FCFF_foo[i] <- pv.cf$FCFF
 }
 
+library(ggplot2)
+
+gg.data <- data.frame(FCFF = FCFF_foo, 
+ inside = ifelse(quantile(FCFF_foo,0.95)<FCFF_foo | FCFF_foo<quantile(FCFF_foo,0.05), "out", "in") )
+
+FCFF_foo>35000
 
 hist(FCFF_foo)
 

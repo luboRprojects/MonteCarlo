@@ -21,7 +21,7 @@ sell_price_0 <- c(91500, 83000,  134578,  114929,  108794)
 rev_init <- c(8206, 3648, 27286, 37757, 129710)
 
 #---- Compute Simulated values - Mines & General ----
-n.boot <- 50
+n.boot <- 500
 
 a1.2 <- a1 %>% group_by(Mine, Year, Variable) %>% select(Value, Value.1) %>%
  mutate(
