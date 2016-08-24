@@ -13,7 +13,9 @@ FCFF_foo <- c()
 revenues_foo <- data.frame(matrix(1, ncol=5))
 net_profit_after_tax_foo <- data.frame(matrix(1, ncol=5))
 COGS_foo <- data.frame(matrix(1, ncol=5)) 
+fcff_annual_foo <- data.frame(matrix(1, ncol=5)) 
 
+# n.samples <- 3
 #-------- Start looping -------
 #i=n.samples=1
  for(i in 1:n.samples){ # commented for DEV only
@@ -27,6 +29,12 @@ quant_growth <- as.matrix(rbind(g1_q, g2_q,
  as.numeric(mc_df_1[i,c("q_growthFY15M2","q_growthFY16M2","q_growthFY17M2","q_growthFY18M2","q_growthFY19M2")]),
  as.numeric(mc_df_1[i,c("q_growthFY15M3","q_growthFY16M3","q_growthFY17M3","q_growthFY18M3","q_growthFY19M3")])) )
 
+quant_growth[1,1] <- (-0.218)
+quant_growth[2,1] <- (-0.816)
+
+ rownames(quant_growth) <- paste("Mine", 1:5)
+ colnames(quant_growth) <- paste0("FY", 15:19)
+ 
 # Revenues - prices growth
 
 g1_p <- c(rep(NA,5))
@@ -37,7 +45,10 @@ price_growth <- as.matrix(rbind(g1_p, g2_p,
  as.numeric(mc_df_1[i,c("p_growthFY15M2","p_growthFY16M2","p_growthFY17M2","p_growthFY18M2","p_growthFY19M2")]),
  as.numeric(mc_df_1[i,c("p_growthFY15M3","p_growthFY16M3","p_growthFY17M3","p_growthFY18M3","p_growthFY19M3")])) )
 
-rownames(quant_growth ) <- rownames(price_growth) <- NULL
+ rownames(price_growth) <- paste("Mine", 1:5)
+ colnames(price_growth) <- paste0("FY", 15:19)
+
+# rownames(quant_growth ) <- rownames(price_growth) <- NULL
 # quant_growth
 # price_growth
 
@@ -81,13 +92,19 @@ sell_price_0 <- c(91500, 83000, 134578, 114929, 108794)
 rev_init <- c(8206, 3648, 27286, 37757, 129710)
 
 quantity0 <- data.frame(init = quantity_0, 1 + quant_growth)
-quantity <- apply(quantity0, 1, function(x){cumprod(as.numeric(x))})
+quantity <- apply(quantity0, 1, function(x){cumprod(as.numeric(x))} )
+ colnames(quantity) <- paste("Mine", 1:5)
+ rownames(quantity) <- paste0("FY", 14:19)
 
 prices0 <- data.frame(init = sell_price_0, 1 + price_growth)
 prices <- apply(prices0, 1, function(x){cumprod(as.numeric(x))})
-prices[ ,5] <- c(108794, 113000, 120000, 127000, 134000, 140700) 
+prices[2,1:2] <- c(110000, 73371) 
+prices[ ,5] <- c(108794, 113000, 120000, 127000, 134000, 140700)
+ colnames(prices) <- paste("Mine", 1:5)
+ rownames(prices) <- paste0("FY", 14:19)
 
-rev_tab0 <- revenues <- quantity * prices / 1000000
+rev_tab0 <- quantity * prices / 1000000
+#rev_tab0 <- revenues <- quantity * prices / 1000000
 rev_tab0 <- rev_tab0[-1, ]
 rev_tab0[1, 1:2] <- c(8206, 3648)
 
@@ -343,9 +360,10 @@ pv.cf <- data.frame(
  mutate(FCFF = pv.cf + terminal)
 
 FCFF_foo[i] <- pv.cf$FCFF
-revenues_foo[i] <- revenues
-net_profit_after_tax_foo[i] <- net_profit_after_tax
-COGS_foo[i] <- cogs
+revenues_foo[i, ] <- revenues
+net_profit_after_tax_foo[i, ] <- net_profit_after_tax
+COGS_foo[i, ] <- cogs
+fcff_annual_foo[i, ] <- FCFF / disc_fact
 
 }
 

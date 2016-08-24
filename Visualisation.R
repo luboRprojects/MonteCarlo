@@ -13,7 +13,10 @@ gg.data$FCFF <- gg.data$FCFF/15119946*1000000
 ggplot(gg.data, aes(x=FCFF, fill=inside) ) + 
  geom_histogram(bins=60, colour="darkblue") + 
 scale_x_continuous(labels = comma) + 
-theme_bw() + guides(fill=FALSE)
+theme_bw() + guides(fill=FALSE) + 
+ ggtitle("Monte Carlo Target Value") + 
+ geom_vline(xintercept = 28446)
+
 
 data2016 <- data.ts %>% filter(PX.LAST > dmy("31-12-2015"))
 data2016$lo70 <- quantile(gg.data$FCFF, 0.70)
