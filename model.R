@@ -10,6 +10,9 @@ mc_df_2 <- mc.samples[[2]]
 n.samples <- mc.samples[[3]]
 
 FCFF_foo <- c()
+revenues_foo <- data.frame(matrix(1, ncol=5))
+net_profit_after_tax_foo <- data.frame(matrix(1, ncol=5))
+COGS_foo <- data.frame(matrix(1, ncol=5)) 
 
 #-------- Start looping -------
 #i=n.samples=1
@@ -75,7 +78,7 @@ div_per_share <- mc_df_2[i,c("div_per_shareFY15", "div_per_shareFY16", "div_per_
 #----------- Revenues ------------- 
 quantity_0 <- c(95400, 269490, 195898, 322077, 704218)
 sell_price_0 <- c(91500, 83000, 134578, 114929, 108794)
-rev_init <- c(8206, 3648x, 27286, 37757, 129710)
+rev_init <- c(8206, 3648, 27286, 37757, 129710)
 
 quantity0 <- data.frame(init = quantity_0, 1 + quant_growth)
 quantity <- apply(quantity0, 1, function(x){cumprod(as.numeric(x))})
@@ -340,6 +343,10 @@ pv.cf <- data.frame(
  mutate(FCFF = pv.cf + terminal)
 
 FCFF_foo[i] <- pv.cf$FCFF
+revenues_foo[i] <- revenues
+net_profit_after_tax_foo[i] <- net_profit_after_tax
+COGS_foo[i] <- cogs
+
 }
 
 
