@@ -23,13 +23,14 @@ data2016$up90 <- quantile(gg.data$FCFF, 0.10)
 data2016$est <- quantile(gg.data$FCFF, 0.50)
 
 l0 <- ggplot(data.ts, aes(x=PX.LAST, y=DHA.VM.Equity)) + 
- geom_line() + 
+ geom_line(colour="darkblue", size=1.05) + 
  scale_y_continuous(
   "DHA share value",
-  limits=c(0, 1.05*max(data.in$DHA.VM.Equity)))+
+  limits=c(0, 1.05*max(data.in$DHA.VM.Equity)),
+  labels = comma)+
  theme_bw()
 
-l0 + geom_line(data=data2016, aes(PX.LAST, y=est) ) + 
+l0 + geom_line(data=data2016, aes(PX.LAST, y=est), colour="red", size=1.5 ) + 
  geom_ribbon(data=data2016, aes(ymin=lo90, ymax=up90), fill="blue", alpha=0.15) + 
  geom_ribbon(data=data2016, aes(ymin=lo70, ymax=up70), fill="red", alpha=0.15)  + 
  scale_x_date(name="Date")
