@@ -14,8 +14,10 @@ ggplot(gg.data, aes(x=FCFF, fill=inside) ) +
  geom_histogram(bins=60, colour="darkblue") + 
 scale_x_continuous(labels = comma) + 
 theme_bw() + guides(fill=FALSE) + 
- ggtitle("Monte Carlo Target Value") + 
- geom_vline(xintercept = 28446)
+ ggtitle("Monte Carlo Target Value") 
+
++ 
+ geom_vline(xintercept = mean(gg.data$FCFF), size=1.5)
 
 
 data2016 <- data.ts %>% filter(PX.LAST > dmy("31-12-2015"))
